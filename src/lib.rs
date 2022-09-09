@@ -22,7 +22,7 @@ impl Mark {
     }
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum Winner {
     Player(Mark),
     Draw,
@@ -55,7 +55,8 @@ impl TicTacToeState {
         } else {
             self.board[row][col] = Some(self.turn);
             self.turn.toggle();
-            Ok(self.find_winner())
+            self.winner = self.find_winner();
+            Ok(self.winner)
         }
     }
 
@@ -86,14 +87,14 @@ impl TicTacToeState {
         self.board
             .iter()
             .enumerate()
-            .all(|(i, row)| is_some_and_matches_winner(row[i], winner))
+            .all(|(i, row)| is_some_and_matches_winner(row[2 - i], winner))
     }
 
     fn is_winner_backward_diagonal(&self, winner: Mark) -> bool {
         self.board
             .iter()
             .enumerate()
-            .all(|(i, row)| is_some_and_matches_winner(row[2 - i], winner))
+            .all(|(i, row)| is_some_and_matches_winner(row[i], winner))
     }
 
     fn is_winner_rows(&self, winner: Mark) -> bool {
